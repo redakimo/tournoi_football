@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}Générer les matchs - {{ tournoi.nom }}{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+    <div style="text-align: center; margin-bottom: 30px;">
+        <h2>⚡ Générer les Matchs</h2>
+        <p style="color: #6c757d;">{{ tournoi.nom }} - {{ tournoi.nombre_equipes }} équipe{{ tournoi.nombre_equipes|pluralize }}</p>
+    </div>
+
+    <div class="card">
+        <form method="post">
+            {% csrf_token %}
+            
+            <h3>🏆 Choisir le Format</h3>
+            
+            <div style="margin: 20px 0;">
+                <label style="display: block; margin: 15px 0; padding: 15px; border: 2px solid #dee2e6; border-radius: 8px; cursor: pointer;">
+                    <input type="radio" name="format" value="championnat" checked style="margin-right: 10px;">
+                    <strong>🏅 Championnat</strong> - Toutes les équipes se rencontrent
+                    <br><small style="color: #6c757d;">{{ tournoi.nombre_equipes|add:"-1" }} matchs par équipe</small>
+                </label>
+                
+                {% if tournoi.nombre_equipes in "4,8,16,32"|make_list %}
+                <label style="display: block; margin: 15px 0; padding: 15px; border: 2px solid #dee2e6; border-radius: 8px; cursor: pointer;">
+                    <input type="radio" name="format" value="elimination" style="margin-right: 10px;">
+                    <strong>🔥 Élimination Directe</strong> - Format coupe
+                    <br><small style="color: #6c757d;">Chaque défaite élimine</small>
+                </label>
+                {% endif %}
+            </div>
+            
+            <div style="text-align: center; margin: 30px 0;">
+                <button type="submit" class="btn" style="background: #28a745; font-size: 18px; padding: 15px 30px;">
+                    ⚡ Générer les Matchs
+                </button>
+                <a href="{% url 'detail_tournoi' tournoi.id %}" class="btn btn-danger" style="margin-left: 15px;">
+                    🚫 Annuler
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

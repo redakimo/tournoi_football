@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}Créer un tournoi - Gestion de Tournois{% endblock %}
+
+{% block content %}
+<h2>🏆 Créer un Tournoi</h2>
+
+<div class="card">
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="nom">Nom du tournoi *</label>
+            <input type="text" id="nom" name="nom" required placeholder="Ex: Coupe du Monde des Clubs">
+        </div>
+        
+        <div class="form-group">
+            <label for="date_debut">Date de début *</label>
+            <input type="date" id="date_debut" name="date_debut" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="lieu">Lieu du tournoi *</label>
+            <input type="text" id="lieu" name="lieu" required placeholder="Ex: Stade de France, Paris">
+        </div>
+        
+        <div style="margin-top: 30px;">
+            <button type="submit" class="btn">💾 Créer le tournoi</button>
+            <a href="{% url 'liste_tournois' %}" class="btn btn-danger">🔙 Annuler</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

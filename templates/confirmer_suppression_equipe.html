@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Supprimer {{ equipe.nom }} - Confirmation{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+    <div class="card" style="background: #f8d7da; border: 1px solid #f5c6cb; text-align: center;">
+        <div style="font-size: 64px; color: #721c24; margin-bottom: 20px;">⚠️</div>
+        <h2 style="color: #721c24; margin-bottom: 20px;">Supprimer l'équipe</h2>
+        
+        <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 15px;">
+                <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px; margin-right: 15px;">
+                    {{ equipe.nom|first }}
+                </div>
+                <div>
+                    <h3 style="color: #2c5234;">{{ equipe.nom }}</h3>
+                    <p style="color: #6c757d; margin: 0;">{{ equipe.ville }} • {{ equipe.joueurs }} joueurs</p>
+                </div>
+            </div>
+        </div>
+        
+        <div style="color: #721c24; margin: 20px 0; text-align: left;">
+            <h4>Cette action va :</h4>
+            <ul style="margin: 15px 0;">
+                <li>❌ <strong>Supprimer définitivement</strong> l'équipe {{ equipe.nom }}</li>
+                <li>❌ <strong>Retirer l'équipe</strong> de tous ses tournois ({{ tournois_count }} tournoi{{ tournois_count|pluralize }})</li>
+                <li>❌ <strong>Perdre toutes les données</strong> associées à cette équipe</li>
+            </ul>
+            <div style="background: #fff3cd; padding: 15px; border-radius: 8px; border: 1px solid #ffeaa7; margin: 20px 0;">
+                <strong style="color: #856404;">⚠️ Cette action est IRRÉVERSIBLE !</strong>
+                <p style="color: #856404; margin: 10px 0 0 0;">Une fois supprimée, vous ne pourrez plus récupérer cette équipe.</p>
+            </div>
+        </div>
+        
+        <div style="margin-top: 30px;">
+            <form method="post" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger" style="margin-right: 15px;">
+                    🗑️ Oui, supprimer définitivement
+                </button>
+            </form>
+            <a href="{% url 'detail_equipe' equipe.id %}" class="btn" style="background: #6c757d;">
+                🔙 Non, annuler
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Saisir résultat - {{ match.equipe_domicile.nom }} vs {{ match.equipe_exterieur.nom }}{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+    <h2 style="text-align: center;">📝 Saisir le Résultat</h2>
+    
+    <div class="card">
+        <!-- Équipes -->
+        <div style="display: flex; align-items: center; justify-content: space-between; margin: 30px 0;">
+            <div style="text-align: center;">
+                <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #28a745 0%, #20c997 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px; margin: 0 auto 10px auto;">
+                    {{ match.equipe_domicile.nom|first }}
+                </div>
+                <strong>{{ match.equipe_domicile.nom }}</strong>
+                <br><small style="color: #6c757d;">{{ match.equipe_domicile.ville }}</small>
+            </div>
+            
+            <div style="text-align: center; margin: 0 30px;">
+                <div style="font-size: 24px; color: #6c757d; font-weight: bold;">VS</div>
+                <small style="color: #6c757d;">Match #{{ match.numero_match }}</small>
+            </div>
+            
+            <div style="text-align: center;">
+                <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 20px; margin: 0 auto 10px auto;">
+                    {{ match.equipe_exterieur.nom|first }}
+                </div>
+                <strong>{{ match.equipe_exterieur.nom }}</strong>
+                <br><small style="color: #6c757d;">{{ match.equipe_exterieur.ville }}</small>
+            </div>
+        </div>
+        
+        <!-- Formulaire -->
+        <form method="post">
+            {% csrf_token %}
+            <div style="display: flex; justify-content: center; align-items: center; margin: 30px 0;">
+                <div style="text-align: center; margin: 0 20px;">
+                    <label style="display: block; margin-bottom: 10px; font-weight: bold;">{{ match.equipe_domicile.nom }}</label>
+                    <input type="number" name="score_domicile" min="0" max="20" required style="width: 80px; text-align: center; font-size: 24px; padding: 10px;">
+                </div>
+                
+                <div style="font-size: 24px; margin: 0 20px;">-</div>
+                
+                <div style="text-align: center; margin: 0 20px;">
+                    <label style="display: block; margin-bottom: 10px; font-weight: bold;">{{ match.equipe_exterieur.nom }}</label>
+                    <input type="number" name="score_exterieur" min="0" max="20" required style="width: 80px; text-align: center; font-size: 24px; padding: 10px;">
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin: 30px 0;">
+                <button type="submit" class="btn" style="background: #28a745; font-size: 18px; padding: 15px 30px;">
+                    💾 Enregistrer le résultat
+                </button>
+                <a href="{% url 'matchs_tournoi' match.tournoi.id %}" class="btn btn-danger" style="margin-left: 15px;">
+                    🚫 Annuler
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

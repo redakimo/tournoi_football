@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block title %}Matchs - {{ tournoi.nom }}{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <div>
+        <h2>⚽ Matchs du Tournoi</h2>
+        <p style="color: #6c757d;">{{ tournoi.nom }} - {{ matchs.count }} match{{ matchs.count|pluralize }}</p>
+    </div>
+    <div>
+        <a href="{% url 'generer_matchs' tournoi.id %}" class="btn" style="background: #28a745; margin-right: 10px;">⚡ Régénérer</a>
+        <a href="{% url 'detail_tournoi' tournoi.id %}" class="btn btn-danger">🔙 Retour au tournoi</a>
+    </div>
+</div>
+
+{% if matchs %}
+    <!-- Résumé -->
+    <div class="card" style="margin-bottom: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+        <div style="display: flex; justify-content: space-around; text-align: center;">
+            <div>
+                <div style="font-size: 32px; font-weight: bold;">{{ matchs.count }}</div>
+                <div style="opacity: 0.9;">Matchs</div>
+            </div>
+            <div>
+                <div style="font-size: 32px; font-weight: bold;">{{ matchs_termines }}</div>
+                <div style="opacity: 0.9;">Terminés</div>
+            </div>
+            <div>
+                <div style="font-size: 32px; font-weight: bold;">{{ matchs_a_venir }}</div>
+                <div style="opacity: 0.9;">À venir</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Liste des matchs -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 20px;">
+        {% for match in matchs %}
+        <div class="card" style="transition: transform 0.3s;">
+            <!-- En-tête du match -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <strong style="color: #007bff;">Match #{{ match.numero_match }}</strong>
+                <span style="padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; {% if match.statut == 'TERMINE' %}background: #28a745; color: white;{% else %}background: #ffc107; color: #856404;{% endif %}">
+                    {% if match.statut == 'TERMINE' %}✅ Terminé{% else %}⏳ À venir{% endif %}
+                </span>
+            </div>
+            
+            <!-- Équipes et score -->
+            <div style="display: flex; align-items: center; justify-content: space-between; margin: 20px 0;">
+                <!-- Équipe domicile -->
+                <div style="text-align: center; flex: 1;">
+                    <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #28a745 0%, #20c997 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px; margin: 0 auto 10px auto;">
+                        {{ match.equipe_domicile.nom|first }}
+                    </div>
+                    <strong style="color: #2c5234;">{{ match.equipe_domicile.nom }}</strong>
+                    <br><small style="color: #6c757d;">{{ match.equipe_domicile.ville }}</small>
+                </div>
+                
+                <!-- Score -->
+                <div style="text-align: center; margin: 0 20px;">
+                    {% if match.est_termine %}
+                        <div style="font-size: 24px; font-weight: bold; color: #2c5234;">
+                            {{ match.score_domicile }} - {{ match.score_exterieur }}
+                        </div>
+                    {% else %}
+                        <div style="font-size: 20px; color: #6c757d;">VS</div>
+                    {% endif %}
+                </div>
+                
+                <!-- Équipe extérieur -->
+                <div style="text-align: center; flex: 1;">
+                    <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px; margin: 0 auto 10px auto;">
+                        {{ match.equipe_exterieur.nom|first }}
+                    </div>
+                    <strong style="color: #2c5234;">{{ match.equipe_exterieur.nom }}</strong>
+                    <br><small style="color: #6c757d;">{{ match.equipe_exterieur.ville }}</small>
+                </div>
+            </div>
+            
+            <!-- Informations supplémentaires -->
+            <div style="text-align: center; margin: 15px 0; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                <small style="color: #6c757d;">🏟️ {{ match.terrain }}</small>
+            </div>
+            
+            <!-- Actions -->
+            <div style="margin-top: 15px; text-align: center;">
+                {% if not match.est_termine %}
+                    <a href="{% url 'saisir_resultat' match.id %}" class="btn" style="font-size: 14px; padding: 8px 16px;">
+                        📝 Saisir résultat
+                    </a>
+                {% else %}
+                    <span style="color: #28a745; font-weight: bold;">
+                        🏆 {% if match.equipe_gagnante %}Vainqueur: {{ match.equipe_gagnante.nom }}{% else %}Match nul{% endif %}
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Actions en bas -->
+    <div style="margin-top: 40px; text-align: center;">
+        <a href="{% url 'classement_tournoi' tournoi.id %}" class="btn" style="background: #17a2b8; margin: 10px;">📊 Voir le classement</a>
+        <a href="{% url 'generer_matchs' tournoi.id %}" class="btn" style="background: #ffc107; margin: 10px;">🔄 Régénérer les matchs</a>
+    </div>
+
+{% else %}
+    <!-- Aucun match -->
+    <div class="card" style="text-align: center; padding: 50px;">
+        <div style="font-size: 64px; margin-bottom: 20px;">⚽</div>
+        <h3>Aucun match généré</h3>
+        <p style="margin: 20px 0; color: #6c757d;">
+            Utilisez le bouton "Générer les matchs" pour créer automatiquement tous les matchs du tournoi.
+        </p>
+        <a href="{% url 'generer_matchs' tournoi.id %}" class="btn" style="margin: 10px;">⚡ Générer les matchs</a>
+    </div>
+{% endif %}
+{% endblock %}

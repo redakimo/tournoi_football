@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Accueil - Gestion de Tournois{% endblock %}
+
+{% block content %}
+<div class="stats">
+    <div class="stat-card">
+        <div class="stat-number">{{ nombre_equipes }}</div>
+        <div>Équipes enregistrées</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">{{ nombre_tournois }}</div>
+        <div>Tournois créés</div>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin: 30px 0;">
+    <div class="card">
+        <h3>🚀 Actions rapides</h3>
+        <p style="margin: 15px 0;">Gérez vos équipes et tournois facilement</p>
+        <a href="{% url 'ajouter_equipe' %}" class="btn">➕ Ajouter une équipe</a>
+        <a href="{% url 'ajouter_tournoi' %}" class="btn">🏆 Créer un tournoi</a>
+    </div>
+    
+    <div class="card">
+        <h3>📊 Aperçu</h3>
+        <p style="margin: 15px 0;">Consultez vos données rapidement</p>
+        <a href="{% url 'liste_equipes' %}" class="btn">Voir les équipes</a>
+        <a href="{% url 'liste_tournois' %}" class="btn">Voir les tournois</a>
+    </div>
+</div>
+
+<div style="text-align: center; margin-top: 40px; color: #666;">
+    <p>© 2025 ILYAS – Tous droits réservés</p>
+</div>
+{% endblock %}

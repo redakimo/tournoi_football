@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Tournois - Gestion de Tournois{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h2>🏆 Liste des Tournois</h2>
+    <a href="{% url 'ajouter_tournoi' %}" class="btn">➕ Créer un tournoi</a>
+</div>
+
+{% if tournois %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px;">
+        {% for tournoi in tournois %}
+        <div class="card">
+            <h3 style="color: #2c5234; margin-bottom: 15px;">{{ tournoi.nom }}</h3>
+            <div style="margin: 10px 0;">
+                <strong>📅 Date :</strong> {{ tournoi.date_debut|date:"d/m/Y" }}
+            </div>
+            <div style="margin: 10px 0;">
+                <strong>📍 Lieu :</strong> {{ tournoi.lieu }}
+            </div>
+            <div style="margin: 10px 0;">
+                <strong>⚽ Équipes :</strong> {{ tournoi.nombre_equipes }} équipe{{ tournoi.nombre_equipes|pluralize }}
+            </div>
+            <div style="margin-top: 20px;">
+                <a href="{% url 'detail_tournoi' tournoi.id %}" class="btn" style="margin-right: 10px;">👁️ Voir détail</a>
+                <a href="{% url 'modifier_tournoi' tournoi.id %}" class="btn" style="background: #ffc107;">✏️ Modifier</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="card" style="text-align: center; padding: 50px;">
+        <h3>Aucun tournoi créé</h3>
+        <p style="margin: 20px 0; color: #6c757d;">Créez votre premier tournoi pour commencer !</p>
+        <a href="{% url 'ajouter_tournoi' %}" class="btn">🏆 Créer un tournoi</a>
+    </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Nouveau tirage au sort - {{ tournoi.nom }}{% endblock %}
+
+{% block content %}
+<div style="max-width: 500px; margin: 0 auto;">
+    <div class="card" style="text-align: center;">
+        <div style="font-size: 64px; margin-bottom: 20px;">🎲</div>
+        <h2>Nouveau Tirage au Sort</h2>
+        <p style="margin: 20px 0; color: #6c757d;">
+            Cela va supprimer tous les matchs existants et générer de nouveaux matchs avec un ordre différent des équipes.
+        </p>
+        
+        <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin: 20px 0;">
+            <strong style="color: #856404;">⚠️ Attention :</strong>
+            <p style="color: #856404; margin: 10px 0 0 0;">Tous les résultats déjà saisis seront perdus !</p>
+        </div>
+        
+        <form method="post" style="margin-top: 30px;">
+            {% csrf_token %}
+            <button type="submit" class="btn" style="background: #17a2b8; margin-right: 15px;">
+                🎲 Confirmer le nouveau tirage
+            </button>
+            <a href="{% url 'detail_tournoi' tournoi.id %}" class="btn btn-danger">
+                🚫 Annuler
+            </a>
+        </form>
+    </div>
+</div>
+{% endblock %}

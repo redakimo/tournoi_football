@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Équipes - Gestion de Tournois{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h2>⚽ Liste des Équipes</h2>
+    <a href="{% url 'ajouter_equipe' %}" class="btn">➕ Ajouter une équipe</a>
+</div>
+
+{% if equipes %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px;">
+        {% for equipe in equipes %}
+        <div class="card" style="transition: transform 0.3s; cursor: pointer;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+            <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px; margin-right: 15px;">
+                    {{ equipe.nom|first }}
+                </div>
+                <div>
+                    <h3 style="color: #2c5234; margin: 0;">{{ equipe.nom }}</h3>
+                    <p style="color: #6c757d; margin: 5px 0;">📍 {{ equipe.ville }}</p>
+                </div>
+            </div>
+            
+            <div style="margin: 15px 0;">
+                <div style="display: flex; justify-content: space-between; margin: 8px 0;">
+                    <span>👥 Joueurs :</span>
+                    <strong style="color: #007bff;">{{ equipe.joueurs }}</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin: 8px 0;">
+                    <span>🏆 Tournois :</span>
+                    <strong style="color: #28a745;">{{ equipe.tournoi_set.count }}</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin: 8px 0;">
+                    <span>📅 Créée :</span>
+                    <span style="color: #6c757d;">{{ equipe.date_creation|date:"d/m/Y" }}</span>
+                </div>
+            </div>
+            
+            <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #dee2e6;">
+                <a href="{% url 'detail_equipe' equipe.id %}" class="btn" style="margin-right: 8px; font-size: 14px; padding: 8px 16px;">👁️ Détail</a>
+                <a href="{% url 'modifier_equipe' equipe.id %}" class="btn" style="background: #ffc107; margin-right: 8px; font-size: 14px; padding: 8px 16px;">✏️ Modifier</a>
+                <a href="{% url 'supprimer_equipe' equipe.id %}" class="btn btn-danger" style="font-size: 14px; padding: 8px 16px;" onclick="return confirm('Supprimer {{ equipe.nom }} ?')">🗑️ Supprimer</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="card" style="text-align: center; padding: 50px;">
+        <div style="font-size: 64px; margin-bottom: 20px;">⚽</div>
+        <h3>Aucune équipe enregistrée</h3>
+        <p style="margin: 20px 0; color: #6c757d;">Commencez par ajouter votre première équipe !</p>
+        <a href="{% url 'ajouter_equipe' %}" class="btn">➕ Ajouter une équipe</a>
+    </div>
+{% endif %}
+{% endblock %}

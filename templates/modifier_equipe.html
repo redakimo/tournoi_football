@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}Modifier {{ equipe.nom }} - Gestion de Tournois{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h2>✏️ Modifier l'Équipe</h2>
+    <a href="{% url 'detail_equipe' equipe.id %}" class="btn btn-danger">🔙 Annuler</a>
+</div>
+
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px;">
+    <div class="card">
+        <h3>📝 Informations de l'équipe</h3>
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="nom">Nom de l'équipe *</label>
+                <input type="text" id="nom" name="nom" value="{{ equipe.nom }}" required placeholder="Ex: FC Barcelone">
+            </div>
+            
+            <div class="form-group">
+                <label for="ville">Ville *</label>
+                <input type="text" id="ville" name="ville" value="{{ equipe.ville }}" required placeholder="Ex: Paris">
+            </div>
+            
+            <div class="form-group">
+                <label for="joueurs">Nombre de joueurs</label>
+                <input type="number" id="joueurs" name="joueurs" value="{{ equipe.joueurs }}" min="11" max="25">
+                <small style="color: #6c757d; font-size: 12px;">
+                    Minimum 11 joueurs (équipe titulaire), maximum 25 joueurs
+                </small>
+            </div>
+            
+            <div style="margin-top: 30px;">
+                <button type="submit" class="btn" style="margin-right: 10px;">💾 Sauvegarder les modifications</button>
+                <a href="{% url 'detail_equipe' equipe.id %}" class="btn btn-danger">🚫 Annuler</a>
+            </div>
+        </form>
+    </div>
+    
+    <div>
+        <!-- Aperçu des changements -->
+        <div class="card">
+            <h4>👁️ Aperçu</h4>
+            <div style="padding: 20px; background: #f8f9fa; border-radius: 8px; margin: 15px 0;">
+                <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                    <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; margin-right: 15px;">
+                        {{ equipe.nom|first }}
+                    </div>
+                    <div>
+                        <strong>{{ equipe.nom }}</strong>
+                        <br>
+                        <small style="color: #6c757d;">{{ equipe.ville }}</small>
+                    </div>
+                </div>
+                <div style="font-size: 14px; color: #6c757d;">
+                    👥 {{ equipe.joueurs }} joueurs<br>
+                    📅 Créée le {{ equipe.date_creation|date:"d/m/Y" }}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Avertissements -->
+        <div class="card" style="background: #fff3cd; border: 1px solid #ffeaa7;">
+            <h4 style="color: #856404;">⚠️ Attention</h4>
+            <div style="color: #856404; font-size: 14px;">
+                <p>• La modification du nom affectera l'affichage dans tous les tournois</p>
+                <p>• La réduction du nombre de joueurs peut affecter les compositions d'équipe</p>
+                <p>• Ces modifications sont appliquées immédiatement</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

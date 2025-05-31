@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ equipe.nom }} - Détail Équipe{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <div style="display: flex; align-items: center;">
+        <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 24px; margin-right: 20px;">
+            {{ equipe.nom|first }}
+        </div>
+        <div>
+            <h2>⚽ {{ equipe.nom }}</h2>
+            <p style="color: #6c757d; font-size: 18px;">📍 {{ equipe.ville }} • 👥 {{ equipe.joueurs }} joueurs</p>
+            <p style="color: #6c757d;">📅 Créée le {{ equipe.date_creation|date:"d F Y à H:i" }}</p>
+        </div>
+    </div>
+    <div>
+        <a href="{% url 'modifier_equipe' equipe.id %}" class="btn" style="background: #ffc107; margin-right: 10px;">✏️ Modifier</a>
+        <a href="{% url 'liste_equipes' %}" class="btn btn-danger">🔙 Retour à la liste</a>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px;">
+    <!-- INFORMATIONS PRINCIPALES -->
+    <div>
+        <!-- Carte principale de l'équipe -->
+        <div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; margin-bottom: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h3 style="color: white; margin-bottom: 15px;">📊 Fiche d'Équipe</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div>
+                            <div style="font-size: 32px; font-weight: bold;">{{ equipe.joueurs }}</div>
+                            <div style="opacity: 0.9;">Joueurs</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 32px; font-weight: bold;">{{ tournois_count }}</div>
+                            <div style="opacity: 0.9;">Tournois</div>
+                        </div>
+                    </div>
+                </div>
+                <div style="font-size: 64px; opacity: 0.3;">⚽</div>
+            </div>
+        </div>
+
+        <!-- Tournois de l'équipe -->
+        <div class="card">
+            <h3>🏆 Tournois de cette équipe</h3>
+            {% if tournois_equipe %}
+                <div style="margin: 20px 0;">
+                    {% for tournoi in tournois_equipe %}
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #dee2e6; border-radius: 8px; margin: 10px 0; background: #f8f9fa;">
+                        <div>
+                            <strong style="color: #2c5234; font-size: 18px;">{{ tournoi.nom }}</strong>
+                            <br>
+                            <small style="color: #6c757d;">
+                                📅 {{ tournoi.date_debut|date:"d/m/Y" }} • 📍 {{ tournoi.lieu }}
+                                <br>
+                                {{ tournoi.nombre_equipes }} équipe{{ tournoi.nombre_equipes|pluralize }} participante{{ tournoi.nombre_equipes|pluralize }}
+                            </small>
+                        </div>
+                        <div>
+                            <a href="{% url 'detail_tournoi' tournoi.id %}" class="btn" style="font-size: 12px; padding: 8px 12px;">
+                                👁️ Voir tournoi
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div style="text-align: center; padding: 40px; color: #6c757d;">
+                    <div style="font-size: 64px; margin-bottom: 20px;">🏆</div>
+                    <h4>Aucun tournoi</h4>
+                    <p>Cette équipe ne participe à aucun tournoi pour le moment.</p>
+                    <a href="{% url 'liste_tournois' %}" class="btn" style="margin-top: 15px;">
+                        🔍 Voir les tournois disponibles
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- SIDEBAR AVEC ACTIONS ET STATS -->
+    <div>
+        <!-- Statistiques détaillées -->
+        <div class="card">
+            <h4>📈 Statistiques Détaillées</h4>
+            <div style="margin: 15px 0;">
+                <div style="display: flex; justify-content: space-between; margin: 15px 0; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                    <span><strong>Équipe créée :</strong></span>
+                    <span style="color: #007bff; font-weight: bold;">{{ jours_existence }} jour{{ jours_existence|pluralize }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin: 15px 0; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                    <span><strong>Tournois actifs :</strong></span>
+                    <span style="color: #28a745; font-weight: bold;">{{ tournois_actifs }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin: 15px 0; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                    <span><strong>Joueurs par match :</strong></span>
+                    <span style="color: #ffc107; font-weight: bold;">{{ equipe.joueurs }}/11</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions rapides -->
+        <div class="card" style="margin-top: 20px;">
+            <h4>🚀 Actions Rapides</h4>
+            <div style="margin: 15px 0;">
+                <a href="{% url 'modifier_equipe' equipe.id %}" class="btn" style="width: 100%; margin: 8px 0; background: #ffc107;">
+                    ✏️ Modifier l'équipe
+                </a>
+                <a href="{% url 'ajouter_tournoi' %}" class="btn" style="width: 100%; margin: 8px 0; background: #28a745;">
+                    🏆 Créer un tournoi
+                </a>
+                <hr style="margin: 20px 0;">
+                <a href="{% url 'supprimer_equipe' equipe.id %}" 
+                   class="btn btn-danger" 
+                   style="width: 100%; margin: 8px 0;"
+                   onclick="return confirm('⚠️ Êtes-vous sûr de vouloir supprimer l\\'équipe {{ equipe.nom }} ? Cette action supprimera aussi ses participations aux tournois et est irréversible.')">
+                    🗑️ Supprimer l'équipe
+                </a>
+            </div>
+        </div>
+
+        <!-- Informations supplémentaires -->
+        <div class="card" style="margin-top: 20px; background: #e7f3ff; border: 1px solid #b3d9ff;">
+            <h4 style="color: #0056b3;">💡 Le saviez-vous ?</h4>
+            <div style="color: #0056b3; font-size: 14px; line-height: 1.6;">
+                {% if equipe.joueurs == 11 %}
+                    <p>✅ Votre équipe a exactement 11 joueurs, parfait pour un match de football !</p>
+                {% elif equipe.joueurs > 11 %}
+                    <p>👥 Votre équipe a {{ equipe.joueurs }} joueurs. Vous avez {{ equipe.joueurs|add:"-11" }} remplaçant{{ equipe.joueurs|add:"-11"|pluralize }} !</p>
+                {% else %}
+                    <p>⚠️ Il vous manque {{ 11|add:equipe.joueurs|add:"-22" }} joueur{{ 11|add:equipe.joueurs|add:"-22"|pluralize }} pour faire une équipe complète.</p>
+                {% endif %}
+                
+                {% if tournois_count == 0 %}
+                    <p>🏆 Inscrivez votre équipe à un tournoi pour commencer à jouer !</p>
+                {% elif tournois_count == 1 %}
+                    <p>🎯 Votre équipe participe à son premier tournoi, bonne chance !</p>
+                {% else %}
+                    <p>🌟 Équipe expérimentée avec {{ tournois_count }} participations !</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

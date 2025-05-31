@@ -1,0 +1,221 @@
+{% extends 'base.html' %}
+
+{% block title %}Classement - {{ tournoi.nom }}{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <div>
+        <h2>🏆 Classement du Tournoi</h2>
+        <p style="color: #6c757d;">{{ tournoi.nom }} - {{ tournoi.date_debut|date:"d F Y" }}</p>
+    </div>
+    <div>
+        <a href="{% url 'matchs_tournoi' tournoi.id %}" class="btn" style="background: #17a2b8; margin-right: 10px;">⚽ Voir les matchs</a>
+        <a href="{% url 'detail_tournoi' tournoi.id %}" class="btn btn-danger">🔙 Retour au tournoi</a>
+    </div>
+</div>
+
+{% if classements %}
+    <!-- Podium des 3 premiers -->
+    <div style="display: flex; justify-content: center; align-items: end; margin: 40px 0; gap: 20px;">
+        {% for classement in classements|slice:":3" %}
+            <div style="text-align: center; {% if classement.position == 1 %}order: 2;{% elif classement.position == 2 %}order: 1;{% else %}order: 3;{% endif %}">
+                <!-- Trophée -->
+                <div style="font-size: {% if classement.position == 1 %}80px{% elif classement.position == 2 %}60px{% else %}50px{% endif %}; margin-bottom: 10px;">
+                    {% if classement.position == 1 %}🥇
+                    {% elif classement.position == 2 %}🥈
+                    {% elif classement.position == 3 %}🥉
+                    {% endif %}
+                </div>
+                
+                <!-- Équipe -->
+                <div style="background: {% if classement.position == 1 %}linear-gradient(135deg, #ffd700 0%, #ffed4e 100%){% elif classement.position == 2 %}linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%){% else %}linear-gradient(135deg, #cd7f32 0%, #daa520 100%){% endif %}; 
+                           padding: 20px; border-radius: 15px; color: {% if classement.position == 2 %}#333{% else %}white{% endif %}; 
+                           width: {% if classement.position == 1 %}200px{% elif classement.position == 2 %}180px{% else %}160px{% endif %}; 
+                           height: {% if classement.position == 1 %}180px{% elif classement.position == 2 %}150px{% else %}120px{% endif %};">
+                    
+                    <div style="width: 50px; height: 50px; background: rgba(255,255,255,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px auto; font-weight: bold; font-size: 18px;">
+                        {{ classement.equipe.nom|first }}
+                    </div>
+                    
+                    <div style="font-weight: bold; font-size: 16px;">{{ classement.equipe.nom }}</div>
+                    <div style="opacity: 0.9; font-size: 14px; margin: 5px 0;">{{ classement.equipe.ville }}</div>
+                    <div style="font-size: 24px; font-weight: bold; margin-top: 10px;">{{ classement.points }} pts</div>
+                    <div style="opacity: 0.9; font-size: 12px;">{{ classement.victoires }}V {{ classement.nuls }}N {{ classement.defaites }}D</div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Tableau détaillé du classement -->
+    <div class="card" style="margin: 30px 0;">
+        <h3>📊 Classement Détaillé</h3>
+        
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; margin-top: 20px;">
+                <thead>
+                    <tr style="background: #f8f9fa;">
+                        <th style="padding: 15px; text-align: center;">#</th>
+                        <th style="padding: 15px; text-align: left;">Équipe</th>
+                        <th style="padding: 15px; text-align: center;">Pts</th>
+                        <th style="padding: 15px; text-align: center;">MJ</th>
+                        <th style="padding: 15px; text-align: center;">V</th>
+                        <th style="padding: 15px; text-align: center;">N</th>
+                        <th style="padding: 15px; text-align: center;">D</th>
+                        <th style="padding: 15px; text-align: center;">BP</th>
+                        <th style="padding: 15px; text-align: center;">BC</th>
+                        <th style="padding: 15px; text-align: center;">Diff</th>
+                        <th style="padding: 15px; text-align: center;">%V</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for classement in classements %}
+                    <tr style="{% if classement.position <= 3 %}background: #f0f8ff;{% endif %} border-bottom: 1px solid #dee2e6;">
+                        <!-- Position -->
+                        <td style="padding: 15px; text-align: center; font-weight: bold; font-size: 18px;">
+                            {% if classement.position == 1 %}🥇
+                            {% elif classement.position == 2 %}🥈
+                            {% elif classement.position == 3 %}🥉
+                            {% else %}{{ classement.position }}
+                            {% endif %}
+                        </td>
+                        
+                        <!-- Équipe -->
+                        <td style="padding: 15px;">
+                            <div style="display: flex; align-items: center;">
+                                <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; margin-right: 15px;">
+                                    {{ classement.equipe.nom|first }}
+                                </div>
+                                <div>
+                                    <strong style="font-size: 16px; color: #2c5234;">{{ classement.equipe.nom }}</strong>
+                                    <br><small style="color: #6c757d;">{{ classement.equipe.ville }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        
+                        <!-- Points -->
+                        <td style="padding: 15px; text-align: center; font-weight: bold; font-size: 18px; color: #007bff;">
+                            {{ classement.points }}
+                        </td>
+                        
+                        <!-- Matchs joués -->
+                        <td style="padding: 15px; text-align: center;">{{ classement.matchs_joues }}</td>
+                        
+                        <!-- Victoires -->
+                        <td style="padding: 15px; text-align: center; color: #28a745; font-weight: bold;">
+                            {{ classement.victoires }}
+                        </td>
+                        
+                        <!-- Nuls -->
+                        <td style="padding: 15px; text-align: center; color: #ffc107; font-weight: bold;">
+                            {{ classement.nuls }}
+                        </td>
+                        
+                        <!-- Défaites -->
+                        <td style="padding: 15px; text-align: center; color: #dc3545; font-weight: bold;">
+                            {{ classement.defaites }}
+                        </td>
+                        
+                        <!-- Buts pour -->
+                        <td style="padding: 15px; text-align: center; color: #28a745;">
+                            {{ classement.buts_pour }}
+                        </td>
+                        
+                        <!-- Buts contre -->
+                        <td style="padding: 15px; text-align: center; color: #dc3545;">
+                            {{ classement.buts_contre }}
+                        </td>
+                        
+                        <!-- Différence -->
+                        <td style="padding: 15px; text-align: center; font-weight: bold; color: {% if classement.difference_buts > 0 %}#28a745{% elif classement.difference_buts < 0 %}#dc3545{% else %}#6c757d{% endif %}">
+                            {% if classement.difference_buts > 0 %}+{% endif %}{{ classement.difference_buts }}
+                        </td>
+                        
+                        <!-- Pourcentage de victoires -->
+                        <td style="padding: 15px; text-align: center;">
+                            <span style="background: {% if classement.pourcentage_victoires >= 70 %}#28a745{% elif classement.pourcentage_victoires >= 40 %}#ffc107{% else %}#dc3545{% endif %}; 
+                                        color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: bold;">
+                                {{ classement.pourcentage_victoires }}%
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Statistiques du tournoi -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 30px 0;">
+        <div class="card" style="text-align: center; background: #e7f3ff; border: 1px solid #b3d9ff;">
+            <h4 style="color: #0056b3;">⚽ Buts marqués</h4>
+            <div style="font-size: 32px; font-weight: bold; color: #0056b3;">
+                {% widthratio total_buts 1 1 %}
+            </div>
+        </div>
+        
+        <div class="card" style="text-align: center; background: #fff3cd; border: 1px solid #ffeaa7;">
+            <h4 style="color: #856404;">🎯 Moyenne/match</h4>
+            <div style="font-size: 32px; font-weight: bold; color: #856404;">
+                {% if matchs_termines > 0 %}
+                    {% widthratio total_buts matchs_termines 1 %}
+                {% else %}
+                    0
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card" style="text-align: center; background: #d4edda; border: 1px solid #c3e6cb;">
+            <h4 style="color: #155724;">📈 Matchs joués</h4>
+            <div style="font-size: 32px; font-weight: bold; color: #155724;">
+                {{ matchs_termines }}
+            </div>
+        </div>
+        
+        <div class="card" style="text-align: center; background: #f8d7da; border: 1px solid #f5c6cb;">
+            <h4 style="color: #721c24;">⏳ Restants</h4>
+            <div style="font-size: 32px; font-weight: bold; color: #721c24;">
+                {{ matchs_restants }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div style="text-align: center; margin: 40px 0;">
+        <a href="{% url 'matchs_tournoi' tournoi.id %}" class="btn" style="background: #17a2b8; margin: 10px;">⚽ Voir tous les matchs</a>
+        <a href="{% url 'generer_matchs' tournoi.id %}" class="btn" style="background: #ffc107; margin: 10px;">🔄 Régénérer les matchs</a>
+        <a href="{% url 'detail_tournoi' tournoi.id %}" class="btn" style="background: #28a745; margin: 10px;">📋 Gérer le tournoi</a>
+    </div>
+
+{% else %}
+    <!-- Aucun classement -->
+    <div class="card" style="text-align: center; padding: 50px;">
+        <div style="font-size: 64px; margin-bottom: 20px;">🏆</div>
+        <h3>Aucun classement disponible</h3>
+        <p style="margin: 20px 0; color: #6c757d;">
+            Le classement sera disponible une fois que des matchs auront été joués.
+        </p>
+        <a href="{% url 'matchs_tournoi' tournoi.id %}" class="btn" style="margin: 10px;">⚽ Voir les matchs</a>
+        <a href="{% url 'generer_matchs' tournoi.id %}" class="btn" style="margin: 10px;">⚡ Générer les matchs</a>
+    </div>
+{% endif %}
+
+<!-- Légende -->
+<div class="card" style="margin-top: 30px; background: #f8f9fa;">
+    <h4>📖 Légende</h4>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; font-size: 14px;">
+        <div><strong>Pts</strong> : Points</div>
+        <div><strong>MJ</strong> : Matchs joués</div>
+        <div><strong>V</strong> : Victoires</div>
+        <div><strong>N</strong> : Matchs nuls</div>
+        <div><strong>D</strong> : Défaites</div>
+        <div><strong>BP</strong> : Buts pour</div>
+        <div><strong>BC</strong> : Buts contre</div>
+        <div><strong>Diff</strong> : Différence de buts</div>
+        <div><strong>%V</strong> : % de victoires</div>
+    </div>
+    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #dee2e6; color: #6c757d; font-size: 12px;">
+        <strong>Système de points :</strong> Victoire = 3 points • Match nul = 1 point • Défaite = 0 point
+    </div>
+</div>
+
+{% endblock %}

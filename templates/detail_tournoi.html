@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ tournoi.nom }} - Détail Tournoi{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <div>
+        <h2>🏆 {{ tournoi.nom }}</h2>
+        <p style="color: #6c757d;">📅 {{ tournoi.date_debut|date:"d F Y" }} - 📍 {{ tournoi.lieu }}</p>
+    </div>
+    <div>
+        <a href="{% url 'modifier_tournoi' tournoi.id %}" class="btn" style="background: #ffc107;">✏️ Modifier</a>
+        <a href="{% url 'liste_tournois' %}" class="btn btn-danger">🔙 Retour à la liste</a>
+    </div>
+</div>
+
+<!-- Statut du tournoi -->
+<div class="card" style="margin-bottom: 30px; {% if tournoi.peut_commencer %}background: #d4edda; border: 1px solid #c3e6cb;{% else %}background: #fff3cd; border: 1px solid #ffeaa7;{% endif %}">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h3 style="{% if tournoi.peut_commencer %}color: #155724;{% else %}color: #856404;{% endif %}">
+                {% if tournoi.peut_commencer %}
+                    ✅ Tournoi prêt à commencer !
+                {% else %}
+                    ⏳ Tournoi en préparation
+                {% endif %}
+            </h3>
+            <p style="margin: 10px 0; {% if tournoi.peut_commencer %}color: #155724;{% else %}color: #856404;{% endif %}">
+                {% if tournoi.peut_commencer %}
+                    Vous avez suffisamment d'équipes pour organiser des matchs.
+                {% else %}
+                    Il vous faut au moins 4 équipes pour commencer le tournoi.
+                {% endif %}
+            </p>
+        </div>
+        {% if tournoi.peut_commencer %}
+        <div>
+            <a href="{% url 'generer_matchs' tournoi.id %}" class="btn" style="background: #28a745; margin: 5px;">⚽ Générer les matchs</a>
+            <a href="{% url 'tirage_sort' tournoi.id %}" class="btn" style="background: #17a2b8; margin: 5px;">🎲 Tirage au sort</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px;">
+    <!-- ÉQUIPES PARTICIPANTES -->
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3>⚽ Équipes Participantes</h3>
+            <span style="background: #007bff; color: white; padding: 5px 15px; border-radius: 20px; font-weight: bold;">
+                {{ equipes_participantes.count }} équipe{{ equipes_participantes.count|pluralize }}
+            </span>
+        </div>
+        
+        {% if equipes_participantes %}
+            <div style="margin: 20px 0;">
+                {% for equipe in equipes_participantes %}
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #dee2e6; border-radius: 8px; margin: 10px 0; background: #f8f9fa;">
+                    <div style="flex: 1;">
+                        <div style="display: flex; align-items: center;">
+                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; margin-right: 15px;">
+                                {{ equipe.nom|first }}
+                            </div>
+                            <div>
+                                <strong style="font-size: 18px; color: #2c5234;">{{ equipe.nom }}</strong>
+                                <br>
+                                <small style="color: #6c757d;">📍 {{ equipe.ville }} • 👥 {{ equipe.joueurs }} joueurs</small>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="{% url 'retirer_equipe_tournoi' tournoi.id equipe.id %}" 
+                       class="btn btn-danger"
+                       onclick="return confirm('Êtes-vous sûr de vouloir retirer {{ equipe.nom }} de ce tournoi ?')"
+                       style="font-size: 12px; padding: 8px 12px; background: #dc3545;">
+                       ❌ Retirer
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div style="text-align: center; padding: 40px; color: #6c757d;">
+                <div style="font-size: 64px; margin-bottom: 20px;">⚽</div>
+                <h4>Aucune équipe inscrite</h4>
+                <p>Commencez par ajouter des équipes à votre tournoi !</p>
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- AJOUTER UNE ÉQUIPE -->
+    <div>
+        <div class="card">
+            <h3>➕ Ajouter une Équipe</h3>
+            
+            {% if toutes_equipes %}
+                <form method="post" action="{% url 'ajouter_equipe_tournoi' tournoi.id %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="equipe_id">Choisir une équipe :</label>
+                        <select id="equipe_id" name="equipe_id" required style="width: 100%;">
+                            <option value="">-- Sélectionner une équipe --</option>
+                            {% for equipe in toutes_equipes %}
+                                <option value="{{ equipe.id }}">
+                                    {{ equipe.nom }} ({{ equipe.ville }})
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn" style="width: 100%; margin-top: 15px;">
+                        ➕ Ajouter au tournoi
+                    </button>
+                </form>
+            {% else %}
+                <p style="color: #6c757d; text-align: center; margin: 20px 0;">
+                    {% if equipes_participantes.count > 0 %}
+                        Toutes vos équipes participent déjà à ce tournoi ! 🎉
+                    {% else %}
+                        Aucune équipe disponible.
+                    {% endif %}
+                </p>
+                <a href="{% url 'ajouter_equipe' %}" class="btn" style="width: 100%; margin-top: 10px;">
+                    🆕 Créer une nouvelle équipe
+                </a>
+            {% endif %}
+        </div>
+        
+        <!-- STATISTIQUES DU TOURNOI -->
+        <div class="card" style="margin-top: 20px;">
+            <h4>📊 Statistiques</h4>
+            <div style="margin: 15px 0;">
+                <div style="display: flex; justify-content: space-between; margin: 10px 0;">
+                    <span><strong>Équipes inscrites :</strong></span>
+                    <span style="color: #007bff; font-weight: bold;">{{ equipes_participantes.count }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin: 10px 0;">
+                    <span><strong>Total joueurs :</strong></span>
+                    <span style="color: #28a745; font-weight: bold;">{{ total_joueurs }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin: 10px 0;">
+                    <span><strong>Matchs possibles :</strong></span>
+                    <span style="color: #ffc107; font-weight: bold;">{{ matchs_possibles }}</span>
+                </div>
+                <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #dee2e6;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span><strong>Statut :</strong></span>
+                        {% if tournoi.peut_commencer %}
+                            <span style="background: #28a745; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px;">
+                                ✅ PRÊT
+                            </span>
+                        {% else %}
+                            <span style="background: #ffc107; color: #856404; padding: 4px 12px; border-radius: 12px; font-size: 12px;">
+                                ⏳ EN PRÉPARATION
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ACTIONS RAPIDES -->
+        <div class="card" style="margin-top: 20px;">
+            <h4>🚀 Actions Rapides</h4>
+            <div style="margin: 15px 0;">
+                <a href="{% url 'modifier_tournoi' tournoi.id %}" class="btn" style="width: 100%; margin: 5px 0; background: #ffc107;">
+                    ✏️ Modifier le tournoi
+                </a>
+                <a href="{% url 'supprimer_tournoi' tournoi.id %}" 
+                   class="btn btn-danger" 
+                   style="width: 100%; margin: 5px 0;"
+                   onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce tournoi ? Cette action est irréversible.')">
+                    🗑️ Supprimer le tournoi
+                </a>
+                <a href="{% url 'matchs_tournoi' tournoi.id %}" class="btn" style="width: 100%; margin: 5px 0; background: #17a2b8;">⚽ Voir les matchs</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
